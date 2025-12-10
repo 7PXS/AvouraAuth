@@ -1,11 +1,11 @@
-import { db } from "@/lib/db";
+import { db } from "../../../../lib/db.js";
 import { 
   verifyPassword, 
   generateToken, 
   sanitizeInput,
   checkRateLimit,
   TESTING_MODE
-} from "@/lib/auth";
+} from "../../../../lib/auth.js";
 
 export async function POST(request) {
   try {
