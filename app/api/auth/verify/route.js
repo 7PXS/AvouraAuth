@@ -1,5 +1,5 @@
-import { db } from "@/lib/db";
-import { validateToken } from "@/lib/auth";
+import { db } from "../../../../lib/db.js";
+import { validateToken } from "../../../../lib/auth.js";
 
 export async function GET(request) {
   try {
