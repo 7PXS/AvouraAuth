@@ -10,13 +10,9 @@ export async function GET(request) {
   }
 
   try {
-    // Match the exact file in api/script/
     const filePath = path.join(process.cwd(), "api", "script", `${gameid}.lua`);
-
-    // Read file contents
     const content = await fs.readFile(filePath, "utf-8");
 
-    // Return as plain text
     return new Response(content, {
       status: 200,
       headers: { "Content-Type": "text/plain" },
