@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "../../../../lib/db.js";
 import { 
   hashPassword, 
   sanitizeInput, 
@@ -6,7 +6,7 @@ import {
   isValidPassword,
   checkRateLimit,
   TESTING_MODE 
-} from "@/lib/auth";
+} from "../../../../lib/auth.js";
 
 export async function POST(request) {
   try {
