@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { db } from "../../../lib/db.js";
-import { validateToken } from "../../../lib/auth.js";
+import { validateToken, TESTING_MODE } from "../../../lib/auth.js";
 
 export async function GET(request) {
   const url = new URL(request.url);
@@ -15,7 +15,31 @@ export async function GET(request) {
     });
   }
 
-  // Check authentication - accept token from URL or header
+  // Skip authentication in testing mode
+  if (TESTING_MODE) {
+    try {
+      const filePath = path.join(process.cwd(), "api", "script", `${gameid}.lua`);
+      const content = await fs.readFile(filePath, "utf-8");
+
+      return new Response(content, {
+        status: 200,
+        headers: { 
+          "Content-Type": "text/plain",
+          "X-Testing-Mode": "true"
+        },
+      });
+    } catch (err) {
+      return new Response(
+        JSON.stringify({ error: "Script not found" }), 
+        { 
+          status: 404,
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+    }
+  }
+
+  // Production mode - require authentication
   const authHeader = request.headers.get("authorization");
   let token = tokenParam; // First try URL parameter
   
