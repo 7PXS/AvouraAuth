@@ -1,11 +1,12 @@
 import { promises as fs } from "fs";
 import path from "path";
-import { db } from "@/lib/db";
-import { validateToken } from "@/lib/auth";
+import { db } from "../../../lib/db.js";
+import { validateToken } from "../../../lib/auth.js";
 
 export async function GET(request) {
   const url = new URL(request.url);
   const gameid = url.searchParams.get("gameid");
+  const tokenParam = url.searchParams.get("token");
 
   if (!gameid) {
     return new Response(JSON.stringify({ error: "Missing gameid" }), { 
@@ -14,20 +15,23 @@ export async function GET(request) {
     });
   }
 
-  // Check authentication
+  // Check authentication - accept token from URL or header
   const authHeader = request.headers.get("authorization");
+  let token = tokenParam; // First try URL parameter
   
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if (!token && authHeader && authHeader.startsWith("Bearer ")) {
+    token = authHeader.substring(7); // Fall back to header
+  }
+  
+  if (!token) {
     return new Response(
-      JSON.stringify({ error: "Authentication required" }), 
+      JSON.stringify({ error: "Authentication required. Include token in URL or header." }), 
       { 
         status: 401,
         headers: { "Content-Type": "application/json" }
       }
     );
   }
-
-  const token = authHeader.substring(7);
 
   // Validate token
   const userId = validateToken(token);
